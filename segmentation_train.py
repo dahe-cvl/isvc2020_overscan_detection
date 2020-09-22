@@ -16,9 +16,6 @@ from models import *
 from metrics import *
 from utils import *
 
-##  https://expoundai.wordpress.com/2019/08/30/transfer-learning-for-segmentation-using-deeplabv3-in-pytorch/
-##  https://pypi.org/project/segmentation-models-pytorch/
-##  LSTM https://github.com/HHTseng/video-classification/blob/master/ResNetCRNN/functions.py
 
 def calculateMetrics(mask_gt, mask_pred, n_classes, tOverall_acc_sum, tAvg_per_class_acc_sum, tAvg_jacc_sum, tAvg_dice_sum):
     #################################
