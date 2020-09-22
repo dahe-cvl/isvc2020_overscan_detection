@@ -1,13 +1,10 @@
-import torchvision
-import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 from torch.autograd import Variable
 from datetime import datetime
 import json
-import argparse
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import precision_score
-from sklearn.metrics import recall_score, roc_auc_score
+from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix
 from models import *
@@ -547,7 +544,7 @@ def testOnFolder():
             #############################
             ACTIVATE_GMM_FLAG = True
             if (ACTIVATE_GMM_FLAG == True):
-                from debug_inference import applyGMM
+                from scripts.debug_inference import applyGMM
 
                 # img_np = np.squeeze(in_img.detach().cpu().numpy())
                 input_image_np = input_image_np.transpose(1, 2, 0)

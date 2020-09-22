@@ -2,7 +2,6 @@ import torchvision
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 from torch.autograd import Variable
-from datetime import datetime
 import json
 import argparse
 from datetime import datetime
@@ -12,7 +11,7 @@ from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score, roc_auc_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix
-from calculateStatistics import calculateMean, calculateSTD, saveStatistics
+from scripts.calculateStatistics import calculateMean, calculateSTD, saveStatistics
 from models import *
 from metrics import *
 from utils import *
@@ -1413,7 +1412,6 @@ def testOnFolderV2(expFolder=None, activate_gpu=True, threshold=0.5):
 
             # apply gaussian mixture model
             if(ACTIVATE_GAUSS_FLAG == True):
-                from debug_inference import applyGMM
                 a = 1
 
 

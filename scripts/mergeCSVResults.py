@@ -46,6 +46,6 @@ print(loss_history_all)
 
 for i in range(0, len(loss_history_all)):
     entry = loss_history_all[i].tolist()
-    csvWriter(dst_folder="./", name="summary_hf_dice.csv", entries_list=entry)
+    csvWriter(dst_folder="../", name="summary_hf_dice.csv", entries_list=entry)
 
 #exit()

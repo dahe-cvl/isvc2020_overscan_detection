@@ -16,8 +16,8 @@ def cropWindow(img, w, h, center_x, center_y):
     return cropped_img
 
 
-img_path = "templates/EF-NS_001_OeFM_3_2.png"
-mask_path = "templates/16mm_mask_prep_v5.png"
+img_path = "../templates/EF-NS_001_OeFM_3_2.png"
+mask_path = "../templates/16mm_mask_prep_v5.png"
 
 #dst_path = "./16mm_masks_full_scale/"
 #random_x_range = [510, 680]

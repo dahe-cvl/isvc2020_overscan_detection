@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 
-img_src = "./templates/EF-NS_001_OeFM_481_part1.png"
+img_src = "../templates/EF-NS_001_OeFM_481_part1.png"
 img = cv2.imread(img_src)
 gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 ret, thresh = cv2.threshold(gray,0,255,cv2.THRESH_BINARY_INV+cv2.THRESH_OTSU)
@@ -59,7 +59,7 @@ def CannyThreshold(val):
     dst = src * (mask[:,:,None].astype(src.dtype))
     cv2.imshow(window_name, dst)
 
-img_src = "./templates/EF-NS_001_OeFM_481.png"
+img_src = "../templates/EF-NS_001_OeFM_481.png"
 src = cv2.imread(img_src)
 src_gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
 cv2.namedWindow(window_name)
@@ -78,7 +78,7 @@ import cv2
 from matplotlib import pyplot as plt
 
 
-img_src = "./templates/EF-NS_001_OeFM_481_part1.png"
+img_src = "../templates/EF-NS_001_OeFM_481_part1.png"
 img = cv2.imread(img_src)
 print(img.shape)
 
