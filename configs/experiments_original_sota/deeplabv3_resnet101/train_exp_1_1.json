@@ -1,0 +1,23 @@
+{
+  "batch_size": 8,
+  "classes": [
+    "0",
+    "1"
+  ],
+  "db_path": "/data/share/frame_border_detection_db_v6/rgb_2class_large/",
+  "dst_path": "/data/share/frame_border_detection_db_v6/results/experiments_original_sota/",
+  "early_stopping_threshold": 20,
+  "expNet": "deeplabv3_resnet101_orig",
+  "expNum": "1_1_cross_entropy_sota",
+  "expTimeStamp": "20200324_1411",
+  "expType": "gray",
+  "pre_trained_weights": null,
+  "lRate": 0.01,
+  "loss_metric": "cross_entropy",
+  "n_epochs": 50,
+  "wDecay": 0.0,
+  "data_aug_flag": true,
+  "resized_dim": [180, 240],
+  "activate_lower_features": false,
+  "trainable_backbone_flag": false
+}

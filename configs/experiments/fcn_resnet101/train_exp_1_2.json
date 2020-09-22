@@ -1,0 +1,22 @@
+{
+  "batch_size": 8,
+  "classes": [
+    "0",
+    "1",
+    "2"
+  ],
+  "db_path": "/data/share/frame_border_detection_db_v6/rgb_3class_large/",
+  "dst_path": "/data/share/frame_border_detection_db_v6/results/experiments_20200403/",
+  "early_stopping_threshold": 35,
+  "expNet": "fcn_resnet101",
+  "expNum": "1_2_cross_entropy",
+  "expTimeStamp": "20200324_1411",
+  "expType": "gray",
+  "pre_trained_weights": null,
+  "lRate": 0.01,
+  "loss_metric": "cross_entropy",
+  "n_epochs": 100,
+  "wDecay": 0.0,
+  "data_aug_flag": true,
+  "resized_dim": [180, 240]
+}
