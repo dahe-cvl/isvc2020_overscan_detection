@@ -1,5 +1,9 @@
 # ISVC2020: Overscan Detection in Digitized Analog Films by Precise Sprocket Hole Segmentation
 
+Paper title: Overscan Detection in Digitized Analog Films by Precise Sprocket Hole Segmentation
+Conference: ISVC 2020 - 15th International Symposium on Visual Computing
+
+
 Requirements:
 
     pip install tqdm, torch, torchvision, tensorboard, tensorboardX, mlflow, sklearn, matplotlib 
@@ -22,10 +26,23 @@ Structure:
 
 Dataset: 
 
-
-
+    Training and Validation set: 
+    This dataset is based on the benchmark dataset MS COCO. [https://cocodataset.org/#home]
+    
+    Test set:
+    Because of copyright issues the image samples of the test set cannot be published. However a list
+    as well as the ground truth masks are published in zenodo.
+    Ephemeral Films Project: [http://efilms.ushmm.org/]
+    
+    Download:
+    
 Pre-Trained models:
-
+    
+    The pre-trained models used in this investigation are published in zenodo. This model can be used for reproducing
+    the results published in the paper "Overscan Detection in Digitized Analog Films by Precise Sprocket Hole Segmentation"
+    at the conference ISVC2020.
+    
+    Download:
 
 
 Run Training: 
@@ -51,4 +68,3 @@ Run Inference:
     to run the a pre-trained model in inference mode the following commands are needed:
     python segmentation_inference.py
     
-
