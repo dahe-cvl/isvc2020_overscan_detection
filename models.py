@@ -1,14 +1,10 @@
 from torchvision import models
-from torchvision.models.segmentation.deeplabv3 import DeepLabHead, DeepLabV3
-from torchvision.models.segmentation.fcn import FCNHead, FCN
-from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor, MaskRCNNHeads
-from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-from unet_model import *
+from torchvision.models.segmentation.deeplabv3 import DeepLabHead
+from torchvision.models.segmentation.fcn import FCNHead
 from metrics import *
 from datasets import *
 from collections import OrderedDict
-from torchvision.models._utils import IntermediateLayerGetter
-from torchvision.models.utils import load_state_dict_from_url
+
 
 class CNN(nn.Module):
     """CNN."""
@@ -52,8 +48,6 @@ class CNN(nn.Module):
                 self.model = nn.Sequential(*list(self.model.children())[:5])
             else:
                 self.model = nn.Sequential(*list(self.model.children())[:-2])
-
-
 
         elif (model_arch == "squeezenet"):
             self.model = models.squeezenet1_1(pretrained=True)
@@ -118,9 +112,6 @@ class CNN(nn.Module):
             #print(self.model)
             #exit()
             print(self.model)
-            exit()
-
-
             self.features_dict = OrderedDict()
 
         elif (model_arch == "mobilenet"):
@@ -139,11 +130,6 @@ class CNN(nn.Module):
                 #self.model = nn.Sequential(*list(self.model.children())[:-1])
                 self.model = nn.Sequential(*list(self.model.features))
 
-            #print(self.features)
-
-            #print(self.model)
-            #exit()
-
             self.features_dict = OrderedDict()
 
         elif (model_arch == "alexnet"):
@@ -160,10 +146,8 @@ class CNN(nn.Module):
             print(self.model)
 
         else:
-            self.model_arch = None;
+            self.model_arch = None
             print("No valid backbone cnn network selected!")
-
-        # hook for the gradients of the activations
 
     def activations_hook(self, grad):
         self.gradients = grad
@@ -176,35 +160,26 @@ class CNN(nn.Module):
         if(self.include_top == False):
             # extract features
             x = self.model(x)
-
-            # register the hook
-            #h = x.register_hook(self.activations_hook)
-
-            # flatten
-            #x = x.view(x.size(0), -1)
-
             self.features_dict['out'] = x
             self.features_dict['aux'] = x
-            #print(type(self.features_dict))
-
             return self.features_dict
 
         elif(self.include_top == True):
             #print(x.size())
             x = self.model(x)
-            #print(x.size())
+
             # flatten
             x = x.view(x.size(0), -1)
-            #print(x.size())
-            #exit()
+
             x = self.classifier(x)
             self.features_dict['out'] = x
+
             return self.features_dict
 
         return x
 
-def loadModel(model_arch="", classes=[], pre_trained_path=None, expType=None, trainable_backbone_flag=False, lower_features=False):
-    print("Load model architecture ... ");
+def loadModel(model_arch="", classes=None, pre_trained_path=None, expType=None, trainable_backbone_flag=False, lower_features=False):
+    print("Load model architecture ... ")
 
     if (model_arch == "deeplabv3_resnet101_orig"):
         print("deeplab_resnet architecture selected ...")
@@ -217,12 +192,10 @@ def loadModel(model_arch="", classes=[], pre_trained_path=None, expType=None, tr
         model.aux_classifier[-1] = torch.nn.Conv2d(256, len(classes), kernel_size=(1, 1))
         features = model.backbone
 
-        #exit()
         if (pre_trained_path != None):
             print("load pre-trained-weights ... ")
             model_dict_state = torch.load(pre_trained_path) # + "/best_model.pth")
             model.load_state_dict(model_dict_state['net'])
-
         return model, features
 
     elif (model_arch == "fcn_resnet101_orig"):
@@ -260,15 +233,11 @@ def loadModel(model_arch="", classes=[], pre_trained_path=None, expType=None, tr
 
         features = backbone_net
         model = models.segmentation.DeepLabV3(backbone=backbone_net, classifier=classifier, aux_classifier=None)
-        #print(backbone_net)
-        #print(model)
-        #exit()
 
         if (pre_trained_path != None):
             print("load pre-trained-weights ... ")
             model_dict_state = torch.load(pre_trained_path)# + "/best_model.pth")
             model.load_state_dict(model_dict_state['net'])
-
         return model, features
 
     elif (model_arch == "deeplabv3_vgg16"):
@@ -323,13 +292,10 @@ def loadModel(model_arch="", classes=[], pre_trained_path=None, expType=None, tr
 
         features = backbone_net
         model = models.segmentation.DeepLabV3(backbone=backbone_net, classifier=classifier, aux_classifier=None)
-        #print(backbone_net)
-        #print(model)
-        #exit()
 
         if (pre_trained_path != None):
             print("load pre-trained-weights ... ")
-            model_dict_state = torch.load(pre_trained_path)# + "/best_model.pth")
+            model_dict_state = torch.load(pre_trained_path)
             model.load_state_dict(model_dict_state['net'])
 
         return model, features
@@ -351,9 +317,6 @@ def loadModel(model_arch="", classes=[], pre_trained_path=None, expType=None, tr
 
         features = backbone_net
         model = models.segmentation.DeepLabV3(backbone=backbone_net, classifier=classifier, aux_classifier=None)
-        #print(backbone_net)
-        #print(model)
-        #exit()
 
         if (pre_trained_path != None):
             print("load pre-trained-weights ... ")
@@ -403,8 +366,6 @@ def loadModel(model_arch="", classes=[], pre_trained_path=None, expType=None, tr
 
         features = backbone_net
         model = models.segmentation.FCN(backbone=backbone_net, classifier=classifier, aux_classifier=None)
-        #print(model)
-        #exit()
 
         if (pre_trained_path != None):
             print("load pre-trained-weights ... ")
@@ -438,9 +399,6 @@ def loadModel(model_arch="", classes=[], pre_trained_path=None, expType=None, tr
 
         features = backbone_net
         model = models.segmentation.FCN(backbone=backbone_net, classifier=classifier, aux_classifier=None)
-        #print(backbone_net)
-        #print(model)
-        #exit()
 
         if (pre_trained_path != None):
             print("load pre-trained-weights ... ")
@@ -473,9 +431,6 @@ def loadModel(model_arch="", classes=[], pre_trained_path=None, expType=None, tr
 
         features = backbone_net
         model = models.segmentation.FCN(backbone=backbone_net, classifier=classifier, aux_classifier=None)
-        #print(backbone_net)
-        #print(model)
-        #exit()
 
         if (pre_trained_path != None):
             print("load pre-trained-weights ... ")
@@ -491,43 +446,6 @@ def loadModel(model_arch="", classes=[], pre_trained_path=None, expType=None, tr
         # exit()
         return model, features
 
-    elif (model_arch == "unet"):
-        print("unet architecture selected ...")
-        model = UNet(n_channels=3, n_classes=len(classes)-1)
-
-    elif (model_arch == "maskrcnn"):
-        print("maskrcnn architecture selected ...")
-
-        model = models.detection.maskrcnn_resnet50_fpn(pretrained=True)
-
-        in_features = model.roi_heads.box_predictor.cls_score.in_features
-        in_features_mask = model.roi_heads.mask_predictor.conv5_mask.in_channels
-
-        model.roi_heads.box_predictor = FastRCNNPredictor(in_features, len(classes))
-
-        hidden_layer = 256
-        model.roi_heads.mask_predictor = MaskRCNNPredictor(in_features_mask,
-                                                           hidden_layer,
-                                                           len(classes))
-        print(model)
-
-    elif (model_arch == "th_predictor"):
-        print("threshold predictor architecture selected ...")
-        backbone_net = CNN(model_arch="squeezenet", n_classes=len(classes), include_top=True, pretrained=trainable_backbone_flag, lower_features=lower_features)
-
-        num_ftrs = 81664
-        backbone_net.classifier = nn.Sequential(
-                                  torch.nn.Linear(num_ftrs, 512),
-                                  torch.nn.ReLU(inplace=False),
-                                  torch.nn.Dropout(0.3),
-                                  torch.nn.Linear(512, 1),
-                                  torch.nn.Sigmoid()
-                                 )
-
-        print(backbone_net)
-        return backbone_net, None
     else:
         print("ERROR: select valid model architecture!")
         exit()
-
-    return model;

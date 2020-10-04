@@ -1,9 +1,14 @@
 import numpy as np
 import cv2
+#from matplotlib import pyplot as plt
 import os
 import random
+import torch
+import torchvision
+import torchvision.transforms as transforms
+from torchvision import datasets
 
-'''
+
 #####################################################
 ####           CONFIGURATION SECTION             ####
 #####################################################
@@ -11,7 +16,7 @@ dst_path = "/data/share/frame_border_detection_db_v5/rgb_3class/"
 src_path = "/data/share/frame_border_detection_db_v3/ms_coco_images_v3/"
 mask_path = "./masks_3classes/"
 #####################################################
-
+'''
 #####################################################
 ####           CONFIGURATION SECTION             ####
 #####################################################
@@ -19,7 +24,7 @@ dst_path = "/caa/Projects02/vhh/public/frame_border_detection_db/"
 src_path = "/caa/Projects02/vhh/public/frame_border_detection_db/ms_coco_images/"
 mask_path = "./16mm_masks_full_scale"
 #####################################################
-'''
+
 #####################################################
 ####           CONFIGURATION SECTION             ####
 #####################################################
@@ -27,6 +32,7 @@ dst_path = "./frame_border_detection_db/"
 src_path = "./images/"
 mask_path = "./16mm_masks_full_scale"
 #####################################################
+'''
 
 sample_dir = dst_path + "/samples"
 label_dir = dst_path + "/labels"

@@ -40,7 +40,6 @@ print(mask.shape)
 print(img.shape)
 
 
-
 img_resized = cv2.resize(img, (mask.shape[1], mask.shape[0]))
 
 alpha = 0.5

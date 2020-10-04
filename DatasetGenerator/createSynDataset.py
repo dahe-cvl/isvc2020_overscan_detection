@@ -1,10 +1,5 @@
 import cv2
 import numpy as np
-import random
-import os
-import skimage.segmentation as seg
-import skimage.color as color
-from matplotlib import pyplot as plt
 
 #####################################################
 ####           CONFIGURATION SECTION             ####
@@ -12,17 +7,21 @@ from matplotlib import pyplot as plt
 #dst_path = "/data/share/frame_border_detection_db_v5/rgb_3class/"
 #src_path = "/data/share/frame_border_detection_db_v3/ms_coco_images_v3/"
 #mask_path = "./masks_3classes/"
+
 #reel_type = "16mm"   # 16mm OR 9.5mm
+
 db_set = "train"
 dst_path = "/data/share/frame_border_detection_db_v6/rgb_2class_large/" + str(db_set) + "/"
 src_path = "/data/share/frame_border_detection_db_v6/ms_coco_images_v3/" + str(db_set) + "/"
 deform_flag = True
 n_classes = 3
 image_size = (720, 960, 1)
+
 #####################################################
 
 
-def rounded_rectangle(src, top_left, bottom_right, radius=1.0, color=[], thickness=1, line_type=cv2.LINE_AA):
+def  rounded_rectangle(src, top_left, bottom_right, radius=1.0, color=[], thickness=1, line_type=cv2.LINE_AA):
+
     #  corners:
     #  p1 - p2
     #  |     |
@@ -36,10 +35,12 @@ def rounded_rectangle(src, top_left, bottom_right, radius=1.0, color=[], thickne
     #height = abs(bottom_right[0] - top_left[1])
     #if radius > 1:
     #    radius = 1
+
     #corner_radius = int(radius * (height/2))
     corner_radius = radius
 
     if thickness < 0:
+
         #big rect
         top_left_main_rect = (int(p1[0] + corner_radius), int(p1[1]))
         bottom_right_main_rect = (int(p3[0] - corner_radius), int(p3[1]))
@@ -71,6 +72,8 @@ def rounded_rectangle(src, top_left, bottom_right, radius=1.0, color=[], thickne
 
     return src
 
+import random
+import os
 
 def generateMask(reel_type="16mm", n_classes=3):
 
@@ -204,12 +207,15 @@ def generateMask(reel_type="16mm", n_classes=3):
             top_left, bottom_right = hole
             mask = rounded_rectangle(mask, top_left, bottom_right, color=color, radius=corner_radius, thickness=-1)
 
+
     cv2.imshow('mask', mask)
     cv2.waitKey(0)
+    #exit()
+
     return mask
 
-
 def generateMaskWithFrameWindow(reel_type="16mm"):
+
     if(reel_type == "16mm"):
         ###################################################
         ### raster settings
@@ -352,7 +358,6 @@ def generateMaskWithFrameWindow(reel_type="16mm"):
 
     return mask
 
-
 def generateImageWithHoles(src_image, mask):
     src_image_gray = cv2.cvtColor(src_image, cv2.COLOR_BGR2GRAY)
     src_image_gray = np.expand_dims(src_image_gray, axis=2).astype('uint8')
@@ -400,10 +405,15 @@ def applyDeformation(src_image, blur_flag=False, brightness_flag=False, gamma_co
     if (hole_deformation_flag == True):
         print("NOT IMPLEMENTED YET")
 
-    return result_image
-
+    return result_image;
 
 def run():
+    #db_set = "train"
+    #dst_path = "/data/share/frame_border_detection_db_v6/rgb_3class_large/"
+    #src_path = "/data/share/frame_border_detection_db_v6/ms_coco_images_v3/" + str(db_set) + "/"
+    #deform_flag = True
+    #n_classes = 3
+
     sample_dir = dst_path + "/samples"
     label_dir = dst_path + "/labels"
 
@@ -425,23 +435,23 @@ def run():
         src_image = cv2.resize(src_image, (image_size[1], image_size[0]))
 
         mask = generateMask(reel_type=t, n_classes=n_classes)
-        res = generateImageWithHoles(src_image, mask)
+        res = generateImageWithHoles(src_image, mask);
 
         if(deform_flag == True):
-            res = applyDeformation(res,
-                                   blur_flag=True,
-                                   brightness_flag=False,
-                                   gamma_correction_flag=True,
-                                   hole_deformation_flag=False
-                                  )
+            res = applyDeformation(res, blur_flag=True,
+                                       brightness_flag=False,
+                                       gamma_correction_flag=True,
+                                       hole_deformation_flag=False
+                                       );
+
 
         sample = (res, mask)
+
         cv2.imwrite(sample_dir + "/s_" + str("{:05d}".format(i)) + ".png", sample[0])
         cv2.imwrite(label_dir + "/l_" + str("{:05d}".format(i)) + ".png", sample[1])
 
         if(i == int(len(image_files_list) / 2)):
             t = "95mm"
-
 
 def run_debug1():
     img_path = "../templates/000000575823.jpg"
@@ -449,10 +459,9 @@ def run_debug1():
     src_image = cv2.resize(src_image, (image_size[1], image_size[0]))
 
     mask = generateMask(reel_type="16mm")
-    res = generateImageWithHoles(src_image, mask)
+    res = generateImageWithHoles(src_image, mask);
 
     sample = (res, mask)
-
 
 def run_debug2():
     img_path = "../templates/16mm_test.png"
@@ -471,10 +480,9 @@ def run_debug3():
                                brightness_flag=False,
                                gamma_correction_flag=True,
                                hole_deformation_flag=False
-                               )
+                               );
     cv2.imshow("blurred_frame", np.hstack((src_image, res_img)))
     cv2.waitKey(0)
-
 
 def applyMask(source_img, mask):
     fine_mask = mask.copy()
@@ -489,16 +497,19 @@ def applyMask(source_img, mask):
     res[prep_mask == 0] = 0
     #cv2.imshow("inputs", np.hstack((input_img, fine_mask, res)))
     #cv2.waitKey(0)
+
+
     return res
 
-
+from matplotlib import pyplot as plt
 def image_show(image, nrows=1, ncols=1, cmap='gray'):
     fig, ax = plt.subplots(nrows=nrows, ncols=ncols, figsize=(14, 14))
     ax.imshow(image, cmap='gray')
     ax.axis('off')
     return fig, ax
 
-
+import skimage.segmentation as seg
+import skimage.color as color
 def applyfelzenszwab(source_img, mask):
     fine_mask = mask.copy()
     input_img = source_img.copy()
@@ -519,8 +530,9 @@ def applyfelzenszwab(source_img, mask):
 
     #cv2.imshow("adsf", image_felzenszwalb); #, cmap='gray'
     #cv2.waitKey(0)
-    return fine_mask
 
+
+    return fine_mask
 
 from sklearn.manifold import TSNE
 import seaborn as sns
@@ -577,7 +589,6 @@ def run_debug4():
     cv2.waitKey(0)
 
     applyTSNE(prep_mask)
-
 
 def run_debug5():
     import cv2
@@ -667,9 +678,11 @@ def run_debug5():
     cv2.imshow('Region Growing', out)
     cv2.waitKey()
     cv2.destroyAllWindows()
+
     #applyfelzenszwab(src_image, sharped_mask)
 
 
-run()
-#run_debug1()
+
+#run()
+run_debug1()
 #run_debug5()

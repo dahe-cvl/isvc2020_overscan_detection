@@ -1,17 +1,18 @@
+import torchvision
+import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 from torch.autograd import Variable
 from datetime import datetime
 import json
+import argparse
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import precision_score
-from sklearn.metrics import recall_score
+from sklearn.metrics import recall_score, roc_auc_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix
 from models import *
 from metrics import *
 from utils import *
-
-
 
 def drawRectangle(img, w, h, center_x, center_y):
     tmp_img = img
@@ -40,29 +41,21 @@ def drawRectangleWithScaleFactor(img, h, scale_factor, center_x, center_y):
     cropped_img = tmp_img[p1_y:p2_y, p1_x:p2_x]
     return cropped_img
 
+
 def drawLine(img, start_point, end_point):
     tmp_img = img
-
     #p1_x = center_x - int(w/2)
     #p1_y = center_y - int(h/2)
     #p2_x = center_x + int(w/2)
     #p2_y = center_y + int(h/2)
-
     #cv2.rectangle(img, (p1_x, p1_y), (p2_x, p2_y), (0, 0, 255), 5)
     cv2.line(img, start_point, end_point, (255, 0, 0), thickness=2)
-
     #cropped_img = tmp_img[p1_y:p2_y, p1_x:p2_x]
     #return cropped_img
-
-def applyfelzenszwab(source_img, mask):
-    fine_mask = mask.copy()
-    input_img = source_img.copy()
-    return fine_mask
 
 
 def generateMaskOfFrame(frame=None, pre_trained_model=None):
     mask_pred = None
-
     print("not implemented yet")
 
     label_orig_pil = frame.convert("RGB")
@@ -70,9 +63,9 @@ def generateMaskOfFrame(frame=None, pre_trained_model=None):
 
     return mask_pred
 
+
 def reelTypeClassifier(mask):
     class_name = "None"
-
     print("not implemented yet")
 
     return class_name
@@ -80,10 +73,9 @@ def reelTypeClassifier(mask):
 
 def cropWindowCalculator(frame=None, mask=None, class_name=None, scale_factor=1):
     crop_window_box = None
-
     print("not implemented yet")
-
     return crop_window_box
+
 
 def run():
     pre_trained_model = ""
@@ -103,7 +95,6 @@ def run():
 
     # post-processing
 
-
     # Reel-Type-Classifier
     class_name = reelTypeClassifier(mask_pred)
 
@@ -115,59 +106,43 @@ def run():
     # Save Final Video
 
 
+def run_inference_on_folder():
+    #################################################################################
+    #################################################################################
+    ##                       CONFIGURATION SECTION                                 ##
+    #################################################################################
+    db_path = "/data/share/datasets/frame_border_detection_db_v6/db_test_all_v3/"
+    threshold = 0.8
+    TENSORBOARD_IMG_LOG = False
+    SAVE_FLAG = True
+    CWC_FLAG = False
+    TIME_LOG = False
+    ACTIVATE_GMM_FLAG = True
+    ACTIVATE_GPU_FLAG = True
+    MODE_CORNER_POINTS = "inner_points"  # inner_points  OR centroids
+    FILM_SCALE_FACTOR = 1.37
 
-
-
-
-def testOnFolder():
-    #expName = "20200326_1452_gray_deeplabv3_resnet101_ExpNum_2/"
-    #expName = "20200326_0948_gray_deeplabv3_resnet101_ExpNum_2/"
-
-    # dataset: v5
-    #expName = "20200327_1822_gray_deeplabv3_resnet101_ExpNum_1/"
-    #expName = "20200327_1824_gray_deeplabv3_resnet101_ExpNum_2/"
-    #expName = "20200328_1243_gray_deeplabv3_resnet101_ExpNum_3/"
-
-    # dataset: v6
-    #expName = "20200329_2055_gray_deeplabv3_resnet101_ExpNum_1/"
-    #expName = "20200329_2055_gray_deeplabv3_resnet101_ExpNum_2/"
-    #expName = "20200328_1243_gray_deeplabv3_resnet101_ExpNum_3/"
-    #expName = "20200402_1129_gray_deeplabv3_vgg_ExpNum_1_1_focal_loss/"
-    #expName = "20200402_1129_gray_deeplabv3_vgg_ExpNum_1_2_cross_entropy/"
-
+    # 20200929 - final - Low-level features
+    exp_root_path = "/data/share/datasets/frame_border_detection_db_v6/results/experiments_20200929_lower_features/"
     #expName = "20200418_1049_gray_fcn_squeezenet_ExpNum_1_1_cross_entropy_lf/"
     #expName = "20200416_0645_gray_deeplabv3_vgg16_ExpNum_1_1_cross_entropy_lf/"
-    #expName = "20200417_0032_gray_fcn_resnet101_ExpNum_1_1_cross_entropy_lf/"
-    expName = "20200418_0401_gray_fcn_mobilenet_ExpNum_1_1_cross_entropy_lf/"
-
-    #expName = "20200417_2117_gray_fcn_mobilenet_ExpNum_1_1_cross_entropy_hf/"
-    #expName = "20200416_1310_gray_fcn_resnet101_ExpNum_1_1_cross_entropy_hf/"
+    expName = "20200417_0032_gray_fcn_resnet101_ExpNum_1_1_cross_entropy_lf/"
+    #expName = "20200417_1413_gray_deeplabv3_mobilenet_ExpNum_1_1_cross_entropy_lf/"
+    # 20200929 - final - high-level features
+    #exp_root_path = "/data/share/datasets/frame_border_detection_db_v6/results/experiments_20200929_higher_features/"
     #expName = "20200418_0414_gray_fcn_squeezenet_ExpNum_1_1_cross_entropy_hf/"
     #expName = "20200416_0512_gray_deeplabv3_vgg16_ExpNum_1_1_cross_entropy_hf/"
+    #expName = "20200416_1310_gray_fcn_resnet101_ExpNum_1_1_cross_entropy_hf/"
+    #expName = "20200417_0900_gray_deeplabv3_mobilenet_ExpNum_1_1_cross_entropy_hf/"
+    #################################################################################
+    #################################################################################
 
-    TENSORBOARD_IMG_LOG = False
-    SAVE_FLAG = False
-    CWC_FLAG = True
-    TIME_LOG = True
-
-    expFolder = "/data/share/frame_border_detection_db_v6/results/experiments_20200404_lower_features/" + str(expName)
+    expFolder = str(exp_root_path) + str(expName)
     with open(expFolder + "/experiment_notes.json", 'r') as json_file:
         param_dict = json.load(json_file)
 
-    # dst_path = param_dict['dst_path'];
-    # dst_path = path
-    #expNet = param_dict['expNet']
-    #expType = param_dict['expType']
-    #db_path = "/data/share/frame_border_detection_db_v5/testset/db_9.5mm_v2/"
-    #db_path = "/data/share/frame_border_detection_db_v5/testset/db_16mm_v2/"
-    #db_path = "/data/share/frame_border_detection_db_v6/db_test_all_v3/"
-    #db_path = "/data/share/frame_border_detection_db_v5/rgb_3class/"
-    #batch_size = param_dict['batch_size']
-    #classes = param_dict['classes']
-
     batch_size = param_dict['batch_size']
     classes = param_dict['classes']
-    db_path = param_dict['db_path']
     expNet = param_dict['expNet']
     expType = param_dict['expType']
     dim = param_dict['resized_dim']
@@ -187,28 +162,17 @@ def testOnFolder():
     print("########################################")
     print("\n")
 
-    ################
-    # load dataset
-    ################
-    trainloader, validloader, testloader = loadSegDataset(data_dir=db_path, batch_size=batch_size, expType=expType,
-                                                          dim=dim)
-
-    db_path = "/data/share/frame_border_detection_db_v6/db_test_all_v3/"
     samples_path = db_path + "/samples/"
     labels_path = db_path + "/labels/"
-
-    threshold = 0.5
-
 
     writer = SummaryWriter(log_dir="./runs/" + "test_" + str(expName))
 
     # Whether to train on a gpu
-    train_on_gpu = False
-    #train_on_gpu = torch.cuda.is_available()
+    train_on_gpu = ACTIVATE_GPU_FLAG
     print("Train on gpu: " + str(train_on_gpu))
 
     # Number of gpus
-    multi_gpu = False;
+    multi_gpu = False
     if train_on_gpu:
         gpu_count = torch.cuda.device_count()
         print("gpu_count: " + str(gpu_count))
@@ -235,21 +199,6 @@ def testOnFolder():
     imgs_list.sort()
     labels_list.sort()
 
-    imgs_list = ["EF-NS_096_NCJF_10129.png"]
-    labels_list = ["EF-NS_096_NCJF_10129_mask.png"]
-
-    #imgs_list = ["EF-NS_001_OeFM_6385.png"]
-    #labels_list = ["EF-NS_001_OeFM_6385_mask.png"]
-
-    #imgs_list = ["EF-NS_001_OeFM_1729.png"]
-    #labels_list = ["EF-NS_001_OeFM_1729_mask.png"]
-
-    #imgs_list = ["EF-NS_004_OeFM_11521.png"]
-    #labels_list = ["EF-NS_004_OeFM_11521_mask.png"]
-
-    #imgs_list = ["EF-NS_011_OeFM_5185.png"]
-    #labels_list = ["EF-NS_011_OeFM_5185_mask.png"]
-
     frm_based_results_list = []
     pred_class_label_list = []
     gt_class_label_list = []
@@ -259,7 +208,7 @@ def testOnFolder():
     ################
     for i in range(0, len(imgs_list)):
         if (TIME_LOG == True):
-            start = datetime.now()
+            start1 = datetime.now()
 
         vid_name = imgs_list[i]
         print("(" + str(i+1) + "|" + str(len(imgs_list)) + ") process " + str(vid_name) + " ... ")
@@ -314,29 +263,16 @@ def testOnFolder():
             outputs = model(inputs)['out']
             outputs = torch.sigmoid(outputs)
             #print(outputs.dtype)
-
-
             outputs[outputs >= threshold] = 1
             outputs[outputs <= threshold] = 0
-
-            #print(outputs.size())
             outputs = torch.argmax(outputs, dim=1)
-
-
             mask_pred = outputs
-            #mask_pred = torch.squeeze(mask_pred)
 
             final_mask = mask_pred
             final_mask = final_mask[0].detach().cpu().float()
 
-            #print(final_mask)
-            #print(final_mask.size())
-            #print(final_mask)
-            #print(torch.unique(final_mask))
-            #exit()
-
             if (TIME_LOG == True):
-                stop = datetime.now()
+                stop1 = datetime.now()
 
             #############################
             # classify mask
@@ -356,21 +292,12 @@ def testOnFolder():
 
             unique_class_indices = torch.unique(final_mask)
             idx = torch.max(unique_class_indices)
-            #print(idx)
-
-
-
-
-            ''''''
-
-
 
             #############################
             # transform generated mask
             #############################
             msk_pil = transform_mask(final_mask)
             msk_pil = msk_pil.convert("RGB")
-            #msk_np = np.array(msk_pil).transpose(0, 1, 2)
             msk = np.array(msk_pil).transpose(0, 1, 2)
             msk_np = np.array(msk_pil).transpose(2, 0, 1)
 
@@ -380,7 +307,6 @@ def testOnFolder():
             heatmap = cv2.applyColorMap(np.array(msk_pil), cv2.COLORMAP_JET)
             heatmap_np = np.array(heatmap).transpose(2, 0, 1)
             heatmap_pil = Image.fromarray(heatmap)
-            #print(heatmap_np.shape)
 
             #############################
             # transform input image
@@ -388,15 +314,6 @@ def testOnFolder():
             input_image = np.array(input_orig_pil).transpose(0, 1, 2)
             input_image_np = np.array(input_image).transpose(2, 0, 1)
             input_image_pil = Image.fromarray(input_image)
-
-            #writer.add_image("input", input_image_np, 0)
-            ## writer.add_image("ground truth mask", label_orig_np, 0)
-            #writer.add_image("predicted mask", msk_np, 0)
-            # writer.add_image("heatmap", heatmap_np, 0)
-            # writer.add_image("overlay", overlay_np, 0)
-            # writer.add_image("result", res, 0)
-            #print(outputs.size())
-
 
             #############################
             # connected-component-labeling
@@ -408,17 +325,16 @@ def testOnFolder():
             stats = output_ccl[2]
             centroids = output_ccl[3]
             print(num_labels)
-            #print(labels)
             print(stats)
             print(centroids)
-            #print("-----------------")
+
             #############################
             # cleanup ccl results
             #############################
             idx = np.where(stats[:, 4:] <= 500)[0]
             stats_n = np.delete(stats, idx, axis=0)
             centroids_n = np.delete(centroids, idx, axis=0)
-            idx = np.where(stats[:, 4:] >= 20000)[0]
+            idx = np.where(stats[:, 4:] >= 30000)[0]
             stats = np.delete(stats_n, idx, axis=0)
             centroids = np.delete(centroids_n, idx, axis=0)
             print("-----------------")
@@ -443,13 +359,8 @@ def testOnFolder():
             print(th1_y)
             print(th2_y)
 
-
-
-
             mask_center_x = int(msk_np.shape[2] / 2)
             mask_center_y = int(msk_np.shape[1] / 2)
-            # print(mask_center_x)
-            # print(mask_center_y)
             mask_center_point = (mask_center_x, mask_center_y)
 
             ########################################
@@ -487,8 +398,6 @@ def testOnFolder():
             print(np.array(stats))
             print(np.array(centroids_final))
             print("-----------------")
-            #exit()
-
 
             ##############################
             ## classify predicted masks
@@ -517,10 +426,6 @@ def testOnFolder():
             print(hole_cnt)
             print(final_holes_np)
 
-
-
-            #exit()
-
             class_name = "nan"
             number_of_holes_pred = 0
             if (hole_cnt == 4):
@@ -542,9 +447,10 @@ def testOnFolder():
             #############################
             # post process mask - fine segmentation
             #############################
-            ACTIVATE_GMM_FLAG = True
             if (ACTIVATE_GMM_FLAG == True):
-                from scripts.debug_inference import applyGMM
+                from FineSegmentation import FineSegmentation
+
+                fine_seg_instance = FineSegmentation()
 
                 # img_np = np.squeeze(in_img.detach().cpu().numpy())
                 input_image_np = input_image_np.transpose(1, 2, 0)
@@ -586,20 +492,15 @@ def testOnFolder():
                     print(input_image_np.shape)
                     print(img_crop.shape)
 
-                    bin_img_crop = applyGMM(img_crop)
-                    final_gmm_mask[p1_y:p2_y, p1_x:p2_x] = bin_img_crop[:, :, 1:2]
-                    # applyTSNE(img_crop)
-                    print(final_gmm_mask.shape)
-                    # m_p_C = cv2.applyColorMap(mask_crop, cv2.COLORMAP_JET)
-                    # stacked = np.hstack((img_crop, m_p_C))
+                    if (TIME_LOG == True):
+                        start2 = datetime.now()
 
-                    # alpha = 0.5
-                    # src1 = img_crop.copy()
-                    # src2 = m_p_C.copy()
-                    # output = m_p_C.copy()
-                    # cv2.addWeighted(src2, alpha, src1, 1 - alpha, 0, output)
-                    # output = cv2.resize(output, (output.shape[1] * 1, output.shape[0] * 1))
-                    # print(output.shape)
+                    bin_img_crop = fine_seg_instance.apply_gmm(img_crop)
+                    final_gmm_mask[p1_y:p2_y, p1_x:p2_x] = bin_img_crop[:, :, 1:2]
+                    print(final_gmm_mask.shape)
+
+                    if (TIME_LOG == True):
+                        stop2 = datetime.now()
 
             corner_points_list = []
             centroids_points_list = []
@@ -611,15 +512,12 @@ def testOnFolder():
             if (CWC_FLAG == True):
                 if(class_name == "16mm"):
                     print(class_name)
-                    #print(num_labels)
-                    #exit()
+
                     if(hole_cnt == 4):
                         if (len(final_holes_np) == 4 ):
                             idx = np.argsort(centroids_final_np, axis=0)[:, :1].flatten()
                             centroids_final_np = centroids_final_np[idx]
                             stats = stats[idx]
-                            #print(stats)
-                            #print(centroids)
 
                             ########################################
                             # center of original mask
@@ -627,8 +525,6 @@ def testOnFolder():
                             #print(msk_np.shape)
                             mask_center_x = int( msk_np.shape[2] / 2 )
                             mask_center_y = int( msk_np.shape[1] / 2 )
-                            #print(mask_center_x)
-                            #print(mask_center_y)
                             mask_center_point = (mask_center_x, mask_center_y)
 
                             ########################################
@@ -667,9 +563,6 @@ def testOnFolder():
                             x23 = -1
                             y12 = -1
                             y43 = -1
-
-                            MODE_CORNER_POINTS = "inner_points"  # inner_points  OR centroids
-                            FILM_SCALE_FACTOR = 1.37
 
                             if (MODE_CORNER_POINTS == "centroids"):
                                 ################################
@@ -721,7 +614,6 @@ def testOnFolder():
                                 #############################
                                 # calculate inner borders
                                 #############################
-
                                 inner_point_list = []
                                 for k, bb in enumerate(final_holes_np):
                                     bb_x = bb[0]
@@ -729,14 +621,6 @@ def testOnFolder():
                                     bb_w = bb[2]
                                     bb_h = bb[3]
                                     hole_pos = centroids_final[k][2]
-                                    print("--------------")
-                                    print(bb_x)
-                                    print(bb_y)
-                                    print(bb_w)
-                                    print(bb_h)
-                                    print(hole_pos)
-
-
 
                                     x = -1
                                     y = -1
@@ -758,8 +642,6 @@ def testOnFolder():
 
                                 inner_points_np = np.array(inner_point_list)
                                 print(inner_points_np)
-
-
 
                                 line_coordinates = []
                                 x1, y1 = (-1, -1)
@@ -832,8 +714,6 @@ def testOnFolder():
                         #############################
                         # cleanup ccl results
                         #############################
-                        #print(centroids)
-
                         idx = np.where(stats[:, 4:] <= 500)[0]
                         stats_n = np.delete(stats, idx, axis=0)
                         # labels_n = np.delete(labels, idx, axis=0)
@@ -848,19 +728,14 @@ def testOnFolder():
                             idx = np.argsort(centroids, axis=0)[:, :1].flatten()
                             centroids = centroids[idx]
                             stats = stats[idx]
-                            #print(stats)
-                            #print(centroids)
 
                             ########################################
                             # center of original mask
                             ########################################
-                            # print(msk_np.shape)
+
                             mask_center_x = int(msk_np.shape[2] / 2)
                             mask_center_y = int(msk_np.shape[1] / 2)
-                            # print(mask_center_x)
-                            # print(mask_center_y)
                             mask_center_point = (mask_center_x, mask_center_y)
-                            #print(mask_center_point)
 
                             ########################################
                             # register region position (quadrant)
@@ -882,9 +757,6 @@ def testOnFolder():
                                     pos = 2
                                 centroids_final.append([p_x, p_y, pos])
 
-                            #print(np.array(stats))
-                            #print(np.array(centroids_final))
-
                             ################################
                             # calculate corner points
                             ################################
@@ -892,9 +764,6 @@ def testOnFolder():
                             x2 = -1
                             y1 = -1
                             y2 = -1
-
-                            MODE_CORNER_POINTS = "inner_points"  # inner_points  OR centroids
-                            FILM_SCALE_FACTOR = 1.307
 
                             if (MODE_CORNER_POINTS == "centroids"):
                                 ################################
@@ -925,9 +794,6 @@ def testOnFolder():
                                 line_coordinates_final.append([(0, y1), (960, y1)])
                                 line_coordinates_final.append([(0, y2), (960, y2)])
 
-
-                                # print(np.array(corner_points_list))
-
                             elif (MODE_CORNER_POINTS == "inner_points"):
                                 #############################
                                 # calculate inner borders
@@ -940,12 +806,6 @@ def testOnFolder():
                                     bb_w = bb[2]
                                     bb_h = bb[3]
                                     hole_pos = centroids_final[k][2]
-                                    #print("--------------")
-                                    #print(bb_x)
-                                    #print(bb_y)
-                                    #print(bb_w)
-                                    #print(bb_h)
-                                    #print(hole_pos)
 
                                     x = -1
                                     y = -1
@@ -958,7 +818,6 @@ def testOnFolder():
 
                                     p = (x, y)
                                     inner_point_list.append([p, hole_pos])
-                                #print(np.array(inner_point_list))
 
                                 inner_points_np = np.array(inner_point_list)
                                 # print(inner_points_np)
@@ -978,13 +837,11 @@ def testOnFolder():
 
                                 # create final borders
                                 x12 = int((x1 + x2) / 2)
-                                #print(x12)
 
                                 corner_points_list.append((x12, y1))
                                 corner_points_list.append((x12, y2))
 
                                 line_coordinates_final.append([(x12, y1), (x12, y2)])
-
 
                             #############################
                             # calculate center of crop
@@ -999,21 +856,15 @@ def testOnFolder():
                             #############################
                             max_height = int(abs(y1 - y2))
 
-
-
-
-
             ########################
             ## visualization
             ########################
-
             tmp = input_image.copy()
 
             ########################
             # draw line segments
             ########################
             for p in line_coordinates_final:
-                #print(p)
                 drawLine(tmp, p[0], p[1])
 
             for p in line_coordinates:
@@ -1023,9 +874,6 @@ def testOnFolder():
             # draw corner points
             ########################
             for x, y in corner_points_list:
-                #print(x)
-                #print(y)
-                #print("---")
                 cv2.circle(tmp, (x, y), 5, (255, 255, 0), -1)
 
             if (center_point != -1):
@@ -1101,13 +949,6 @@ def testOnFolder():
                 cv2.imwrite(save_path + "/msk_pred/" + "pred_" + str(vid_name) + ".png", msk_np)
                 cv2.imwrite(save_path + "/gmm_msk_pred/" + "gmm_pred_" + str(vid_name) + ".png", final_gmm_mask)
 
-
-
-                #print("save intermediate results ... ")
-                #for a, img in enumerate(image_list):
-                #    cv2.imwrite(save_path + "/" + str(a+1) + "_" + str(i+1) + ".png", img)
-
-
             ###############################
             # calculate pixel accuracy
             ###############################
@@ -1126,7 +967,6 @@ def testOnFolder():
             label_orig_tensor = torch.Tensor(label_orig_np).long()
             #print(torch.unique(label_orig_tensor))
 
-            ## https://github.com/kevinzakka/pytorch-goodies/blob/master/metrics.py
             overall_acc, avg_per_class_acc, avg_jacc, avg_dice = eval_metrics(label_orig_tensor, msk_tensor, len(classes))
 
             frm_based_results_list.append([vid_name,
@@ -1143,26 +983,23 @@ def testOnFolder():
     frm_based_results_np = np.array(frm_based_results_list)
     overall_scores = np.mean(frm_based_results_np[:, 1:].astype('float32'), axis=0)
 
-
-
     if (TIME_LOG == True):
-        time_diff = stop - start
+        time_diff1 = stop1 - start1
+        time_diff2 = stop2 - start2
         print("\n#####################################")
-        print("time_diff:" + str(time_diff))
+        print("time_diff(segnet):" + str(time_diff1))
+        print("time_diff(gmm):" + str(time_diff2))
+        print("time_diff(all):" + str(time_diff1 + time_diff2))
         print("#####################################")
-
-
-    print(frm_based_results_np.shape)
 
     print("-----------------------")
     print('overall_acc: %.4f' % overall_scores[0])
     print('avg_per_class_acc: %.4f' % overall_scores[1])
     print('avg_jacc: %.4f' % overall_scores[2])
     print('avg_dice: %.4f' % overall_scores[3])
-    ###test
+
 
     # calculate final class scores
-
     # accuracy: (tp + tn) / (p + n)
     accuracy = accuracy_score(gt_class_label_list, pred_class_label_list)
     print('Accuracy: %f' % accuracy)
@@ -1178,35 +1015,10 @@ def testOnFolder():
     # confusion matrix
     matrix = confusion_matrix(gt_class_label_list, pred_class_label_list, labels=[0, 1, 2])
     print(matrix)
-
     writer.close()
-
-
-
-
 
 def main():
     #run()
-    testOnFolder()
-
-
+    run_inference_on_folder()
 
 main()
-
-'''
-grid = torchvision.utils.make_grid(outputs_conv1.data[0][0])
-writer.add_image("feature maps 1", grid, 0, dataformats='CHW')
-# writer.add_graph(model, outputs_conv.data[0][0])
-
-
-grid = torchvision.utils.make_grid(outputs_conv2.data[0][0])
-writer.add_image("feature maps 2", grid, 0, dataformats='CHW')
-# writer.add_graph(model, outputs_conv.data[0][0])
-
-
-grid = torchvision.utils.make_grid(outputs_conv3.data[7][0])
-writer.add_image("feature maps 3", grid, 0, dataformats='CHW')
-# writer.add_graph(model, outputs_conv.data[0][0])
-'''
-
-''''''
