@@ -34,7 +34,9 @@ Dataset:
     as well as the ground truth masks are published in zenodo.
     Ephemeral Films Project: [http://efilms.ushmm.org/]
     
-    Download:
+    Download: [https://doi.org/10.5281/zenodo.4065499]
+    
+    Hint: Download all archive parts and extract it into one defined archive.
     
 Pre-Trained models:
     
@@ -42,7 +44,7 @@ Pre-Trained models:
     the results published in the paper "Overscan Detection in Digitized Analog Films by Precise Sprocket Hole Segmentation"
     at the conference ISVC2020.
     
-    Download:
+    Download: [https://doi.org/10.5281/zenodo.4065499]
 
 
 Run Training: 
